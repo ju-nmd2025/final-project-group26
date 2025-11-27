@@ -4,21 +4,15 @@ export default class Character {
     this.y = y;
     this.w = w;
     this.h = h;
-    //		this.isOnPlatForm = false;
+
+    this.vy = 0;
+    this.gravity = 1;
   }
 
   draw() {
-    rect(this.x, this.y, this.w, this.h);
-  }
-
-  isColliding(character, platform) {
-    if (
-      platform.y === character.y + character.w &&
-      platform.x <= character.x + character.w
-    ) {
-      return true;
-    } else {
-      return false;
-    }
+    push();
+    fill(157, 73, 73);
+    rect(this.x, this.y, this.w, this.h, 10);
+    pop();
   }
 }
