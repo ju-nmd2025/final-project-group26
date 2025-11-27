@@ -11,7 +11,7 @@ const jumpSpeed = -15;
 const tolerance = 5;
 const platformFallSpeed = 1;
 
-let gameStarted = false; // Start screen
+let gameStarted = false;
 let button;
 
 let platforms = [];
@@ -21,49 +21,139 @@ const platformVerticalSpacing = [80, 150];
 
 function initPlatforms() {
   platforms = [];
-  for (let i = 0; i < 5; i++) {
-    let w = random(60, 120);
+  // First platform near floor
+  let firstW = random(platformWidthRange[0], platformWidthRange[1]);
+  platforms.push({
+    x: random(0, canvasWidth - firstW),
+    y: floor - 80,
+    w: firstW,
+    h: 20,
+  });
+
+  for (let i = 1; i < platformCount; i++) {
+    let w = random(platformWidthRange[0], platformWidthRange[1]);
     let x = random(0, canvasWidth - w);
-    let y = canvasHeight - (i * 100 + 80); // spacing
-    platforms.push(new Platform(x, y, w, 20));
+    let y =
+      platforms[i - 1].y -
+      random(platformVerticalSpacing[0], platformVerticalSpacing[1]);
+    platforms.push({ x, y, w, h: 20 });
   }
 }
 
-// Draw all platforms
-for (let plat of platforms) {
-  plat.draw();
+function isOnAnyPlatform() {
+  for (let plat of platforms) {
+    const horizontallyAligned =
+      character.x + character.w > plat.x && character.x < plat.x + plat.w;
+
+    const verticallyAligned =
+      character.y + character.h >= plat.y - tolerance &&
+      character.y + character.h <= plat.y + tolerance;
+
+    if (horizontallyAligned && verticallyAligned) return plat;
+  }
+  return null;
 }
 function setup() {
   createCanvas(canvasWidth, canvasHeight);
+  showStartScreen();
 }
 
+function showStartScreen() {
+  background(100, 160, 200);
+  textSize(32);
+  textStyle(BOLD);
+  fill(255);
+  text("hmm...", 40, 100);
+
+  button = createButton("CLICK HERE");
+  button.position(180, 280);
+  button.style("font", "italic bold 20px arial");
+  button.mousePressed(startGame);
+}
+
+function startGame() {
+  gameStarted = true;
+  button.remove();
+  initPlatforms();
+}
+
+let platformsFalling = false;
+
 function draw() {
-  background(255, 150, 70);
+  if (!gameStarted) return;
+
+  background(100, 160, 200);
+
+  if (keyIsDown(65)) character.x -= moveSpeed;
+  if (keyIsDown(68)) character.x += moveSpeed;
+  character.x = constrain(character.x, 0, canvasWidth - character.w);
+
+  character.y += character.vy;
+  character.vy += character.gravity;
+
+  if (character.y + character.h > floor) {
+    character.y = floor - character.h;
+    character.vy = 0;
+  }
+
+  let standingPlat = isOnAnyPlatform();
+  if (character.vy > 0 && standingPlat) {
+    character.y = standingPlat.y - character.h;
+    character.vy = 0;
+    platformsFalling = true;
+  }
+
+  if (platformsFalling) {
+    for (let plat of platforms) {
+      plat.y += platformFallSpeed;
+
+      if (plat.y > canvasHeight) {
+        plat.w = random(platformWidthRange[0], platformWidthRange[1]);
+        plat.x = random(0, canvasWidth - plat.w);
+        plat.y = -random(
+          platformVerticalSpacing[0],
+          platformVerticalSpacing[1]
+        );
+      }
+    }
+  }
+
+  for (let plat of platforms) {
+    push();
+    fill(205, 80, 80);
+    rect(plat.x, plat.y, plat.w, plat.h, 6);
+    pop();
+  }
 
   character.draw();
-  platform.draw();
 
-  platform.x -= 0;
-  if (platform.x + platform.w < 0) {
-    platform.x = 500;
-  }
-
-  if (
-    character.y + character.h < 530 &&
-    !character.isColliding(character, platform)
-  ) {
-    character.y += 10;
-  }
-
-  // Floor
+  // Floor line
+  stroke(0);
   line(0, floor, canvasWidth, floor);
+
+  if (character.y > canvasHeight) {
+    background(0);
+    fill(255);
+    textSize(32);
+    textAlign(CENTER);
+    text("GAME OVER", canvasWidth / 2, canvasHeight / 2);
+    noLoop();
+  }
 }
 
 function keyPressed() {
-  if (
-    character.y + character.h === floor ||
-    character.isColliding(character, platform)
-  ) {
-    character.y -= 120;
+  if (!gameStarted) return;
+
+  let onFloor =
+    character.y + character.h >= floor - tolerance &&
+    character.y + character.h <= floor + tolerance;
+
+  let onPlatform = isOnAnyPlatform();
+
+  if (onFloor || onPlatform) {
+    character.vy = jumpSpeed;
+
+    if (keyIsDown(65)) character.x -= 10;
+    else if (keyIsDown(68)) character.x += 10;
   }
 }
