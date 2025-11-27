@@ -19,15 +19,15 @@ class Character {
 
 let canvasWidth = 440;
 let canvasHeight = 600;
-let floor = 530;
-let character = new Character(175, 50, 50, 50);
-
+let floor = 530; // you'll die
+let character;
 const moveSpeed = 5;
 const jumpSpeed = -15;
 const tolerance = 5;
 const platformFallSpeed = 1;
 
 let gameStarted = false;
+let gameOverState = false;
 let button;
 
 let platforms = [];
@@ -35,9 +35,10 @@ const platformCount = 5;
 const platformWidthRange = [60, 120];
 const platformVerticalSpacing = [80, 150];
 
+let platformsFalling = false;
+
 function initPlatforms() {
   platforms = [];
-  // First platform near floor
   let firstW = random(platformWidthRange[0], platformWidthRange[1]);
   platforms.push({
     x: random(0, canvasWidth - firstW),
@@ -72,6 +73,7 @@ function isOnAnyPlatform() {
 
 function setup() {
   createCanvas(canvasWidth, canvasHeight);
+  character = new Character(175, 50, 50, 50);
   showStartScreen();
 }
 
@@ -86,34 +88,54 @@ function showStartScreen() {
   button.position(170, 270);
   button.size(150, 70);
   button.style("font", "bold 26px verdana");
-  button.style("border-radius", 10);
+  button.style("border-radius", "15px");
   button.mousePressed(startGame);
 }
 
 function startGame() {
   gameStarted = true;
+  gameOverState = false;
+  platformsFalling = false;
   button.remove();
+  character = new Character(175, 50, 50, 50); // reset
   initPlatforms();
+  loop();
 }
 
-let platformsFalling = false;
+// game over
+function gameOver() {
+  gameOverState = true;
+  noLoop();
+  background(0);
+  fill(255);
+  textSize(28);
+  textAlign(CENTER);
+  text("you just lost the game (✿◡‿◡)", canvasWidth / 2, canvasHeight / 2);
+  textSize(16);
+  text("Press SPACE to restart", canvasWidth / 2, canvasHeight / 2 + 40);
+}
 
 function draw() {
   if (!gameStarted) return;
 
   background(100, 160, 200);
 
-  // Horizontal movement
-  if (keyIsDown(65)) character.x -= moveSpeed;
-  if (keyIsDown(68)) character.x += moveSpeed;
+  if (gameOverState) {
+    gameOver();
+    return;
+  }
+
+  if (keyIsDown(65)) character.x -= moveSpeed; // A
+  if (keyIsDown(68)) character.x += moveSpeed; // D
   character.x = constrain(character.x, 0, canvasWidth - character.w);
 
+  // Gravity
   character.y += character.vy;
   character.vy += character.gravity;
 
-  if (character.y + character.h > floor) {
-    character.y = floor - character.h;
-    character.vy = 0;
+  // deadly floor
+  if (character.y + character.h >= floor) {
+    gameOver();
   }
 
   let standingPlat = isOnAnyPlatform();
@@ -127,6 +149,7 @@ function draw() {
     for (let plat of platforms) {
       plat.y += platformFallSpeed;
 
+      // respawn
       if (plat.y > canvasHeight) {
         plat.w = random(platformWidthRange[0], platformWidthRange[1]);
         plat.x = random(0, canvasWidth - plat.w);
@@ -147,26 +170,21 @@ function draw() {
 
   character.draw();
 
+  // da floor is deadly
   stroke(0);
   line(0, floor, canvasWidth, floor);
-
-  // Game over if fall
-  if (character.y > canvasHeight) {
-    background(0);
-    fill(255);
-    textSize(32);
-    textAlign(CENTER);
-    text("you just lost the game (✿◡‿◡)", canvasWidth / 2, canvasHeight / 2);
-    noLoop();
-  }
 }
-
 function keyPressed() {
   if (!gameStarted) return;
 
+  if (gameOverState && keyCode === 32) {
+    // space
+    startGame();
+    return;
+  }
   let onFloor =
     character.y + character.h >= floor - tolerance &&
-    character.y + character.h <= floor + tolerance;
+    character.y + character.h <= floor + tolerence;
 
   let onPlatform = isOnAnyPlatform();
 
