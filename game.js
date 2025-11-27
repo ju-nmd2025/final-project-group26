@@ -5,18 +5,10 @@ function setup() {
   createCanvas(canvasWidth, canvasHeight);
 }
 
-// Obstacle / Spike / Death
-function drawObstacle() {
-  push();
-  fill("red");
-  triangle(180, 300, 210, 240, 240, 300);
-  pop();
-}
-
 let canvasWidth = 400;
 let canvasHeight = 600;
 let floor = 530;
-let character = new Character(50, 50, 50, 50);
+let character = new Character(175, 10, 50, 50);
 
 function draw() {
   background(255, 150, 70);
