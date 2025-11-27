@@ -27,7 +27,7 @@ const jumpSpeed = -15;
 const tolerance = 5;
 const platformFallSpeed = 1;
 
-let gameStarted = false; // Start screen
+let gameStarted = false;
 let button;
 
 let platforms = [];
@@ -46,7 +46,6 @@ function initPlatforms() {
     h: 20,
   });
 
-  // Remaining platforms above
   for (let i = 1; i < platformCount; i++) {
     let w = random(platformWidthRange[0], platformWidthRange[1]);
     let x = random(0, canvasWidth - w);
@@ -57,9 +56,6 @@ function initPlatforms() {
   }
 }
 
-// -----------------------------
-// Collision
-// -----------------------------
 function isOnAnyPlatform() {
   for (let plat of platforms) {
     const horizontallyAligned =
@@ -74,17 +70,11 @@ function isOnAnyPlatform() {
   return null;
 }
 
-// -----------------------------
-// Setup
-// -----------------------------
 function setup() {
   createCanvas(canvasWidth, canvasHeight);
   showStartScreen();
 }
 
-// -----------------------------
-// Start Screen
-// -----------------------------
 function showStartScreen() {
   background(100, 160, 200);
   textSize(32);
@@ -92,9 +82,11 @@ function showStartScreen() {
   fill(255);
   text("hmm...", 40, 100);
 
-  button = createButton("CLICK HERE");
-  button.position(180, 280);
-  button.style("font", "italic bold 20px arial");
+  button = createButton("START😎");
+  button.position(170, 270);
+  button.size(150, 70);
+  button.style("font", "bold 26px verdana");
+  button.style("border-radius", 10);
   button.mousePressed(startGame);
 }
 
@@ -104,9 +96,6 @@ function startGame() {
   initPlatforms();
 }
 
-// -----------------------------
-// Draw Loop
-// -----------------------------
 let platformsFalling = false;
 
 function draw() {
@@ -119,17 +108,14 @@ function draw() {
   if (keyIsDown(68)) character.x += moveSpeed;
   character.x = constrain(character.x, 0, canvasWidth - character.w);
 
-  // Gravity
   character.y += character.vy;
   character.vy += character.gravity;
 
-  // Floor collision
   if (character.y + character.h > floor) {
     character.y = floor - character.h;
     character.vy = 0;
   }
 
-  // Platform collision
   let standingPlat = isOnAnyPlatform();
   if (character.vy > 0 && standingPlat) {
     character.y = standingPlat.y - character.h;
@@ -137,12 +123,10 @@ function draw() {
     platformsFalling = true;
   }
 
-  // Move platforms down
   if (platformsFalling) {
     for (let plat of platforms) {
       plat.y += platformFallSpeed;
 
-      // Respawn above screen
       if (plat.y > canvasHeight) {
         plat.w = random(platformWidthRange[0], platformWidthRange[1]);
         plat.x = random(0, canvasWidth - plat.w);
@@ -154,18 +138,15 @@ function draw() {
     }
   }
 
-  // Draw platforms
   for (let plat of platforms) {
     push();
-    fill("blue");
+    fill(105, 70, 30);
     rect(plat.x, plat.y, plat.w, plat.h, 6);
     pop();
   }
 
-  // Draw character
   character.draw();
 
-  // Floor line
   stroke(0);
   line(0, floor, canvasWidth, floor);
 
@@ -175,14 +156,11 @@ function draw() {
     fill(255);
     textSize(32);
     textAlign(CENTER);
-    text("GAME OVER", canvasWidth / 2, canvasHeight / 2);
+    text("you just lost the game (✿◡‿◡)", canvasWidth / 2, canvasHeight / 2);
     noLoop();
   }
 }
 
-// -----------------------------
-// Jump
-// -----------------------------
 function keyPressed() {
   if (!gameStarted) return;
 
