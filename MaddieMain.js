@@ -7,14 +7,27 @@ class Character {
 
     this.velocity = 0;
     this.gravity = 0.1;
+    this.jumpStrength = 5;
   }
-
+// jump function
+jump() {
+    this.velocity -=this.jumpStrength;
+  }
+}
+  
   draw() {
     rect(this.x, this.y, this.width, this.height);
   }
   update() {
+    if (this.x + this.width > 0) this.x = this.width; 
+    if (this.x > width) this.x = width - this.width;
+
     this.velocity += this.gravity;
     this.y += this.velocity;
+  }
+function keyPressed() {
+  if (key == ' ') {
+    character.jump();
   }
 }
 
