@@ -9,35 +9,58 @@ class Character {
     this.gravity = 0.1;
     this.jumpStrength = 5;
   }
-// jump function
-jump() {
-    this.velocity -=this.jumpStrength;
+  // JUMP
+   jump() {
+    this.velocity -= this.jumpStrength;
+  }
+}
+draw() {
+    rect(this.x, this.y, this.width, this.height);
+  }
+
+class Platform {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.width = 100;
+    this.height = 20;
+  }
+  draw() {
+    fill (139, 69, 19);
+    rect(this.x, this.y, this.width, this.height);
   }
 }
   
-  draw() {
-    rect(this.x, this.y, this.width, this.height);
-  }
-  update() {
-    if (this.x + this.width > 0) this.x = this.width; 
-    if (this.x > width) this.x = width - this.width;
 
+  update() {
+    if (this.x + this.width > 0) this.x = width;
+   if (this.x > width) this.x = -this.width;
+  }
     this.velocity += this.gravity;
     this.y += this.velocity;
-  }
-function keyPressed() {
-  if (key == ' ') {
-    character.jump();
-  }
-}
+
+    if (keyIsDown(LEFT_ARROW)) {
+      this.x -= 3;
+    }
+    if (keyIsDown(RIGHT_ARROW)) {
+      this.x += 3;
+    }
 
 let character;
 function setup() {
   createCanvas(440, 600);
   character = new Character();
 }
+
 function draw() {
   background(155, 203, 45);
   character.draw();
   character.update();
+}
+
+
+function keyPressed() {
+  if (key == " ") {
+    character.jump();
+  }
 }
