@@ -1,4 +1,4 @@
-class Platform {
+export class Platform {
   constructor(x, y) {
     this.x = x;
     this.y = y;

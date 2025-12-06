@@ -1,4 +1,4 @@
-class Character {
+export class Character {
   constructor() {
     this.x = width / 2;
     this.y = height / 2;
@@ -9,16 +9,10 @@ class Character {
     this.gravity = 0.1;
     this.jumpStrength = 5;
   }
-  // JUMP
-   jump() {
-    this.velocity -= this.jumpStrength;
-  }
-}
-draw() {
+ draw() {
     rect(this.x, this.y, this.width, this.height);
-  }
-
-update() {
+  } 
+  update () {
     if (this.x + this.width > 0) this.x = width;
    if (this.x > width) this.x = -this.width;
   }
@@ -31,3 +25,11 @@ update() {
     if (keyIsDown(RIGHT_ARROW)) {
       this.x += 3;
     }
+
+    // JUMP
+   jump() {
+    this.velocity -= this.jumpStrength;
+  }
+}
+
+
