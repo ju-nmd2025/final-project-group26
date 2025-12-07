@@ -125,8 +125,8 @@ function draw() {
     return;
   }
 
-  if (keyIsDown(65)) character.x -= moveSpeed; // A
-  if (keyIsDown(68)) character.x += moveSpeed; // D
+  if (keyIsDown(65) || keyIsDown(LEFT_ARROW)) character.x -= moveSpeed; // A and left arrow key
+  if (keyIsDown(68) || keyIsDown(RIGHT_ARROW)) character.x += moveSpeed; // D and right arrow key
   character.x = constrain(character.x, 0, canvasWidth - character.w);
 
   // Gravity
