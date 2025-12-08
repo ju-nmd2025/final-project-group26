@@ -14,17 +14,17 @@ class Character {
   constructor() {
     this.x = width / 2;
     this.y = height / 2;
-    this.width = 40;
-    this.height = 60;
+    this.width = 45;
+    this.height = 45;
 
-    this.velocity = 2; // fall speed
-    this.gravity = 0.1;
-    this.jumpStrength = 9;
+    this.velocity = 4; // fall speed
+    this.gravity = 0.1; // how much boune on platform, lower number = weaker
+    this.jumpStrength = 12;
   }
 
   draw() {
     fill(139, 69, 19);
-    rect(this.x, this.y, this.width, this.height);
+    rect(this.x, this.y, this.width, this.height, 10);
   }
 
   jump() {
@@ -73,13 +73,13 @@ class Platform {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.width = 60;
+    this.width = 85;
     this.height = 20;
   }
 
   draw() {
-    fill(100, 255, 100);
-    rect(this.x, this.y, this.width, this.height);
+    fill(100, 205, 100);
+    rect(this.x, this.y, this.width, this.height, 10);
   }
 }
 // GAME SETUP //
@@ -117,7 +117,7 @@ function draw() {
   }
 
   // play state //
-  translate(0, width / 2 - character.y);
+  translate(0, height / 2 - character.y); // makes it so THAT canvas moves with character
   // update and draw character and platforms //
   character.update(platforms);
   character.draw();
@@ -177,7 +177,7 @@ function drawGameOverScreen() {
   push();
   textAlign(CENTER, CENTER);
   textFont("comic sans ms");
-  textSize(30);
+  textSize(25);
   fill(255);
   text("you just lost the game (✿◡‿◡)", width / 2, height / 3);
 
@@ -191,6 +191,8 @@ function drawGameOverScreen() {
     gameOverButton.style("z-index", "1000"); // on top of canvas
     gameOverButton.position(180, 370);
     gameOverButton.size(140, 50);
+    gameOverButton.style("font", "bold 22px verdana");
+    gameOverButton.style("border-radius", "10px");
     gameOverButton.mousePressed(() => {
       setupGame();
       gameOverButton.remove();
