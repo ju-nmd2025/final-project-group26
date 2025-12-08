@@ -1,21 +1,21 @@
-class Character {
-  constructor(x, y, w, h) {
-    this.x = x;
-    this.y = y;
-    this.w = w;
-    this.h = h;
+// class Character {
+//   constructor(x, y, w, h) {
+//     this.x = x;
+//     this.y = y;
+//     this.w = w;
+//     this.h = h;
 
-    this.vy = 0;
-    this.gravity = 1;
-  }
+//     this.vy = 0;
+//     this.gravity = 1;
+//   }
 
-  draw() {
-    push();
-    fill(157, 73, 73);
-    rect(this.x, this.y, this.w, this.h, 10);
-    pop();
-  }
-}
+//   draw() {
+//     push();
+//     fill(157, 73, 73);
+//     rect(this.x, this.y, this.w, this.h, 10);
+//     pop();
+//   }
+// }
 
 let canvasWidth = 440;
 let canvasHeight = 600;
@@ -77,30 +77,30 @@ function setup() {
   showStartScreen();
 }
 
-function showStartScreen() {
-  background(100, 160, 200);
-  textSize(32);
-  textStyle(BOLD);
-  fill(255);
-  text("hmm...", 40, 100);
+// function showStartScreen() {
+//   background(100, 160, 200);
+//   textSize(32);
+//   textStyle(BOLD);
+//   fill(255);
+//   text("hmm...", 40, 100);
 
-  button = createButton("START😎");
-  button.position(170, 270);
-  button.size(150, 70);
-  button.style("font", "bold 26px verdana");
-  button.style("border-radius", "15px");
-  button.mousePressed(startGame);
-}
+//   button = createButton("START😎");
+//   button.position(170, 270);
+//   button.size(150, 70);
+//   button.style("font", "bold 26px verdana");
+//   button.style("border-radius", "15px");
+//   button.mousePressed(startGame);
+// }
 
-function startGame() {
-  gameStarted = true;
-  gameOverState = false;
-  platformsFalling = false;
-  button.remove();
-  character = new Character(175, 50, 50, 50); // reset
-  initPlatforms();
-  loop();
-}
+// function startGame() {
+//   gameStarted = true;
+//   gameOverState = false;
+//   platformsFalling = false;
+//   button.remove();
+//   character = new Character(175, 50, 50, 50); // reset
+//   initPlatforms();
+//   loop();
+// }
 
 // // game over
 // function gameOver() {
@@ -184,7 +184,7 @@ function keyPressed() {
   }
   let onFloor =
     character.y + character.h >= floor - tolerance &&
-    character.y + character.h <= floor + tolerence;
+    character.y + character.h <= floor + tolerance;
 
   let onPlatform = isOnAnyPlatform();
 
