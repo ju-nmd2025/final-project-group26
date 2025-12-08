@@ -141,6 +141,12 @@ function draw() {
     return;
   }
 
+  //play state ??wtf??
+//   translate(0, height / 2 - character.y); // makes it so THAT canvas moves with character
+//   // update and draw character and platforms //
+//   character.update(platforms);
+//   character.draw();
+
  //score count
   score += scoreRate;  // increases every frame
   //drawing score on the screen
