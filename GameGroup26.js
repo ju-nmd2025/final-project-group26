@@ -17,68 +17,76 @@
 //   }
 // }
 
-// -------------------------------------------------------
-// GAME VARIABLES & CONFIGURATION
-// -------------------------------------------------------
-let canvasWidth = 440;          // Width of the game window
-let canvasHeight = 600;         // Height of the game window
-let floor = 530; // you'll die. // Y position of the deadly floor line
-let character;                  // Will store the Character object
-const moveSpeed = 5;            // How fast the character moves left/right
-const jumpSpeed = -15;          // Upward jump velocity (negative goes up)
-const tolerance = 5;            // Collision leniency for platform landing
-const platformFallSpeed = 1;    // How fast platforms move downward
+// // -------------------------------------------------------
+// // GAME VARIABLES & CONFIGURATION
+// // -------------------------------------------------------
+// let canvasWidth = 440;          // Width of the game window
+// let canvasHeight = 600;         // Height of the game window
+// let floor = 530; // you'll die. // Y position of the deadly floor line
+// let character;                  // Will store the Character object
+// const moveSpeed = 5;            // How fast the character moves left/right
+// const jumpSpeed = -15;          // Upward jump velocity (negative goes up)
+// const tolerance = 5;            // Collision leniency for platform landing
+// const platformFallSpeed = 1;    // How fast platforms move downward
 
-let gameStarted = false;        // True only after clicking START
-let gameOverState = false;      // True when player dies
-let button;                     // The START button element
+// let gameStarted = false;        // True only after clicking START
+// let gameOverState = false;      // True when player dies
+// let button;                     // The START button element
 
-let platforms = [];             // Holds all platform objects
-const platformCount = 5;        // How many platforms exist
-const platformWidthRange = [60, 120];   // Min/max platform width
-const platformVerticalSpacing = [80, 150]; // Min/max vertical distance
+// let platforms = [];             // Holds all platform objects
+// const platformCount = 5;        // How many platforms exist
+// const platformWidthRange = [60, 120];   // Min/max platform width
+// const platformVerticalSpacing = [80, 150]; // Min/max vertical distance
 
-let platformsFalling = false;   // When true, platforms begin to fall
+// let platformsFalling = false;   // When true, platforms begin to fall
 
-function initPlatforms() {
-  platforms = [];
-  let firstW = random(platformWidthRange[0], platformWidthRange[1]);
-  platforms.push({
-    x: random(0, canvasWidth - firstW),
-    y: floor - 80,
-    w: firstW,
-    h: 20,
-  });
+// //Platform Initialization Function
+// function initPlatforms() {    // Reset the platform array (clear old ones)
+//   platforms = [];
+//   let firstW = random(platformWidthRange[0], platformWidthRange[1]);  // Create the FIRST platform
 
-  for (let i = 1; i < platformCount; i++) {
-    let w = random(platformWidthRange[0], platformWidthRange[1]);
-    let x = random(0, canvasWidth - w);
-    let y =
-      platforms[i - 1].y -
-      random(platformVerticalSpacing[0], platformVerticalSpacing[1]);
-    platforms.push({ x, y, w, h: 20 });
-  }
-}
+//   platforms.push({                          // Place first platform near the character
+//     x: random(0, canvasWidth - firstW),
+//     y: floor - 80,
+//     w: firstW,
+//     h: 20,
+//   });
 
-function isOnAnyPlatform() {
-  for (let plat of platforms) {
-    const horizontallyAligned =
-      character.x + character.w > plat.x && character.x < plat.x + plat.w;
+// // Create ALL OTHER platforms above the previous one
+//   for (let i = 1; i < platformCount; i++) {
+//     let w = random(platformWidthRange[0], platformWidthRange[1]); //width 
+//     let x = random(0, canvasWidth - w);                           //random Horizontal
+//     let y =
+//       platforms[i - 1].y -                                        // Position above previous
+//       random(platformVerticalSpacing[0], platformVerticalSpacing[1]);
+//     platforms.push({ x, y, w, h: 20 });
+//   }
+// }
 
-    const verticallyAligned =
-      character.y + character.h >= plat.y - tolerance &&
-      character.y + character.h <= plat.y + tolerance;
+// //Platform Collision Detection
+// function isOnAnyPlatform() {
+//   for (let plat of platforms) {
+//      // Check horizontal overlap
+//     const horizontallyAligned =
+//       character.x + character.w > plat.x && character.x < plat.x + plat.w;
 
-    if (horizontallyAligned && verticallyAligned) return plat;
-  }
-  return null;
-}
+//       // Check if character's feet touch the top of the platform
+//     const verticallyAligned =
+//       character.y + character.h >= plat.y - tolerance &&
+//       character.y + character.h <= plat.y + tolerance;
 
-function setup() {
-  createCanvas(canvasWidth, canvasHeight);
-  character = new Character(175, 50, 50, 50);
-  showStartScreen();
-}
+//      // If BOTH conditions are true, the character stands on this platform
+//     if (horizontallyAligned && verticallyAligned) return plat;
+//   }
+//   return null;  // Not on any platform
+// }
+
+// //THE SETUP FUNCTION (creates canvas + background)
+// function setup() {
+//   createCanvas(canvasWidth, canvasHeight); //  Creates the canvas where the game is drawn
+//   character = new Character(175, 50, 50, 50);   //  Create the player character
+//   showStartScreen();   //  Display the start screen first
+// }
 
 // function showStartScreen() {
 //   background(100, 160, 200);
