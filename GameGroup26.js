@@ -174,25 +174,25 @@ function draw() {
   stroke(0);
   line(0, floor, canvasWidth, floor);
 }
-function keyPressed() {
-  if (!gameStarted) return;
+// function keyPressed() {
+//   if (!gameStarted) return;
 
-  if (gameOverState && keyCode === 32) {
-    // space
-    startGame();
-    return;
-  }
-  let onFloor =
-    character.y + character.h >= floor - tolerance &&
-    character.y + character.h <= floor + tolerance;
+//   if (gameOverState && keyCode === 32) {
+//     // space
+//     startGame();
+//     return;
+//   }
+//   let onFloor =
+//     character.y + character.h >= floor - tolerance &&
+//     character.y + character.h <= floor + tolerance;
 
-  let onPlatform = isOnAnyPlatform();
+//   let onPlatform = isOnAnyPlatform();
 
-  if (onFloor || onPlatform) {
-    character.vy = jumpSpeed;
+//   if (onFloor || onPlatform) {
+//     character.vy = jumpSpeed;
 
-    // Diagonal adjustment
-    if (keyIsDown(65)) character.x -= 10;
-    else if (keyIsDown(68)) character.x += 10;
-  }
-}
+//     // Diagonal adjustment
+//     if (keyIsDown(65)) character.x -= 10;
+//     else if (keyIsDown(68)) character.x += 10;
+//   }
+// }
