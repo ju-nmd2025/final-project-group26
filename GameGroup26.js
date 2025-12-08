@@ -170,9 +170,9 @@ function draw() {
 
   character.draw();
 
-  // da floor is deadly
-  stroke(0);
-  line(0, floor, canvasWidth, floor);
+  // // da floor is deadly
+  // stroke(0);
+  // line(0, floor, canvasWidth, floor);
 }
 // function keyPressed() {
 //   if (!gameStarted) return;
