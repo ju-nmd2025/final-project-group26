@@ -6,7 +6,7 @@ class Character {
     this.h = h;
 
     this.vy = 0;
-    this.gravity = 1;
+    this.gravity = 0.8;
   }
 
   draw() {
@@ -22,10 +22,10 @@ class Character {
 // -------------------------------------------------------
 let canvasWidth = 440;          // Width of the game window
 let canvasHeight = 600;         // Height of the game window
-let floor = 530; // you'll die. // Y position of the deadly floor line
+let floorY = 530; // you'll die. // Y position of the deadly floor line
 let character;                  // Will store the Character object
 const moveSpeed = 5;            // How fast the character moves left/right
-const jumpSpeed = -15;          // Upward jump velocity (negative goes up)
+const jumpSpeed = -18;          // Upward jump velocity (negative goes up)
 const tolerance = 5;            // Collision leniency for platform landing
 const platformFallSpeed = 1;    // How fast platforms move downward
 
@@ -38,6 +38,9 @@ const platformCount = 5;        // How many platforms exist
 const platformWidthRange = [60, 120];   // Min/max platform width
 const platformVerticalSpacing = [80, 150]; // Min/max vertical distance
 
+let score = 0;       // player's score
+let scoreRate = 0.016;   // how fast score increases
+
 let platformsFalling = false;   // When true, platforms begin to fall
 
 //Platform Initialization Function
@@ -47,7 +50,7 @@ function initPlatforms() {    // Reset the platform array (clear old ones)
 
   platforms.push({                          // Place first platform near the character
     x: random(0, canvasWidth - firstW),
-    y: floor - 80,
+    y: floorY - 80,
     w: firstW,
     h: 20,
   });
@@ -110,6 +113,7 @@ function startGame() {
   button.remove();
   character = new Character(175, 50, 50, 50); // reset
   initPlatforms();
+  score = 0;  // reset score
   loop();
 }
 
@@ -131,22 +135,33 @@ function draw() {
   if (!gameStarted) return; //if game didnt start, ignore // Do nothing until Start is pressed
 
   background(100, 160, 200); //colored background - THIS draws the sky blue background every frame
-
+    
   if (gameOverState) {      //If game is over, draw the game over screen which is already defined above...
     gameOver();
     return;
   }
+
+ //score count
+  score += scoreRate;  // increases every frame
+  //drawing score on the screen
+    fill(255);
+    textSize(24);
+    textAlign(LEFT, TOP);
+    text("Score: " + floor(score), 10, 10);
+
+
   //pressing keys on keyboard for horizontal movement
   if (keyIsDown(65) || keyIsDown(LEFT_ARROW)) character.x -= moveSpeed; // A and left arrow key
   if (keyIsDown(68) || keyIsDown(RIGHT_ARROW)) character.x += moveSpeed; // D and right arrow key
   character.x = constrain(character.x, 0, canvasWidth - character.w); //Keep inside screen
+
 
   // apply Gravity
   character.y += character.vy;
   character.vy += character.gravity;
 
    // Check collision with deadly floor
-  if (character.y + character.h >= floor) {
+  if (character.y + character.h >= floorY) {
     gameOver();
   }
 
@@ -187,7 +202,7 @@ function draw() {
 
   // // da floor is deadly - defined line of the floor
   stroke(0);
-  line(0, floor, canvasWidth, floor);
+  line(0, floorY, canvasWidth, floorY);
 }
 
 function keyPressed() {
@@ -200,15 +215,15 @@ function keyPressed() {
   }
 
   // Check if on floor
-  let onFloor =
-    character.y + character.h >= floor - tolerance &&
-    character.y + character.h <= floor + tolerance;
+  let onFloorY =
+    character.y + character.h >= floorY - tolerance &&
+    character.y + character.h <= floorY + tolerance;
 
   // Or on a platform
   let onPlatform = isOnAnyPlatform();
 
   // If allowed to jump
-  if (onFloor || onPlatform) {
+  if (onFloorY || onPlatform) {
     character.vy = jumpSpeed;
 
     // Diagonal adjustment
