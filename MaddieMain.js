@@ -17,9 +17,9 @@ class Character {
     this.width = 40;
     this.height = 60;
 
-    this.velocity = 1; // fall speed
+    this.velocity = 2; // fall speed
     this.gravity = 0.1;
-    this.jumpStrength = 7;
+    this.jumpStrength = 9;
   }
 
   draw() {
@@ -149,9 +149,8 @@ function draw() {
 // start screen //
 function setupStartScreen() {
   startButton = createButton("START 😎");
-  startButton.style("position", "absolute");
   startButton.style("z-index", "1000"); // on yop of canvas
-  startButton.position(200, 270);
+  startButton.position(170, 270);
   startButton.size(150, 70);
   startButton.style("font", "bold 26px verdana");
   startButton.style("border-radius", "15px");
@@ -163,29 +162,34 @@ function setupStartScreen() {
 }
 
 function drawStartScreen() {
+  push();
   textAlign(CENTER, CENTER);
   textSize(32);
   fill(255);
+  textFont("comic sans ms");
   text("game title", width / 2, height / 3);
+  pop();
 }
 
 // game over screen //
 function drawGameOverScreen() {
   background(50);
+  push();
   textAlign(CENTER, CENTER);
-  textSize(32);
+  textFont("comic sans ms");
+  textSize(30);
   fill(255);
   text("you just lost the game (✿◡‿◡)", width / 2, height / 3);
 
   textSize(24);
   text("Final Score: " + score, width / 2, height / 2);
+  pop();
 
   // restart button //
   if (!gameOverButton) {
     gameOverButton = createButton("RESTART");
-    gameOverButton.style("position", "absolute");
     gameOverButton.style("z-index", "1000"); // on top of canvas
-    gameOverButton.position(200, 300);
+    gameOverButton.position(180, 370);
     gameOverButton.size(140, 50);
     gameOverButton.mousePressed(() => {
       setupGame();
