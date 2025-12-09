@@ -1,5 +1,4 @@
 // variables
-
 let character; 
 let platforms = [];
 let gap;
