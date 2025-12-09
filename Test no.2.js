@@ -1,7 +1,6 @@
 // variables
-// 
 
-let character; 
+//let character; 
 let platforms = [];
 let gap;
 let score = 0;
@@ -55,8 +54,8 @@ class Character {
     this.y += this.velocity;
 
     // Left / Right
-    if (keyIsDown(LEFT_ARROW)) this.x -= 4;
-    if (keyIsDown(RIGHT_ARROW)) this.x += 4;
+    if (keyIsDown(LEFT_ARROW)) this.x -= 7;
+    if (keyIsDown(RIGHT_ARROW)) this.x += 7;
 
     // Wrap screen
     if (this.x + this.width < 0) this.x = width;
