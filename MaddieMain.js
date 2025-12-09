@@ -1,8 +1,8 @@
 // variables
-let character;
-let platforms = []; // empty platform array
-let gap;
-let score = 0;
+let character; // hold character object
+let platforms = []; // platform array - stores platform objects
+let gap; // vertical space between platforms
+let score = 0; // keeping track of how many platforms the character has passed
 
 let gameState = "start"; // "start", "playing", "gameover"
 let startButton;
@@ -11,18 +11,18 @@ let gameOverButton;
 // character class //
 class Character {
   constructor() {
-    this.width = 45; // character side
-    this.height = 45; // character side
+    this.width = 45; // character width in pixels
+    this.height = 45; // character height in pixels
 
-    this.x = width / 2 - this.width / 2;
+    this.x = width / 2 - this.width / 2; // center horizontally
     this.y = height - this.height - 10; // 10 px margin from bottom
 
-    this.velocity = 4; // fall speed
-    this.gravity = 0.1; // how much boune on platform, lower number = weaker
-    this.jumpStrength = 12;
+    this.velocity = 0; // fall , 0 imply start at ground, inital vert speed
+    this.gravity = 0.1; // how much bounce on platform, lower number = weaker gravity, downward acceleration
+    this.jumpStrength = 8; // how strong it jumps, upward jump speed
 
     this.started = false; // jump not start
-    this.firstJumpEase = 0; // easing factor for smooth first jump
+    this.firstJumpEase = 0; // easing factor for smooth first jump, gradual increase
   }
 
   draw() {
@@ -32,10 +32,10 @@ class Character {
 
   jump() {
     if (!this.started) {
-      this.started = true;
-      this.firstJumpEase = 0; // starting ease jump
+      this.started = true; // first jump starts game
+      this.firstJumpEase = 0; // reset easing factor
     } else {
-      this.velocity = -this.jumpStrength;
+      this.velocity = -this.jumpStrength; // jump upwards
     }
   }
 
@@ -45,18 +45,18 @@ class Character {
       this.firstJumpEase += 0.03;
       this.velocity = -this.jumpStrength * this.firstJumpEase;
     } else if (this.started) {
-      this.velocity += this.gravity;
+      this.velocity += this.gravity; // normal gravity
     }
 
-    this.y += this.velocity;
+    this.y += this.velocity; // moves character vertically
 
     // left right move
     if (keyIsDown(LEFT_ARROW)) this.x -= 4;
     if (keyIsDown(RIGHT_ARROW)) this.x += 4;
 
     // screen wrap
-    if (this.x + this.width < 0) this.x = width;
-    if (this.x > width) this.x = -this.width;
+    if (this.x + this.width < 0) this.x = width; // wrap left
+    if (this.x > width) this.x = -this.width; // wrap right
 
     // platform collis. after jump starts
     if (this.started) {
@@ -69,7 +69,7 @@ class Character {
           let minX = platform.x - this.width;
           let maxX = platform.x + platform.width;
           if (this.x >= minX && this.x <= maxX) {
-            this.velocity = -this.jumpStrength;
+            this.velocity = -this.jumpStrength; // bounce
           }
         }
       }
@@ -85,8 +85,8 @@ class Character {
 // platform class
 class Platform {
   constructor(x, y) {
-    this.x = x;
-    this.y = y;
+    this.x = x; // horizontal position
+    this.y = y; // veritcal position
     this.width = 85;
     this.height = 20;
   }
@@ -99,15 +99,15 @@ class Platform {
 // GAME SETUP //
 function setup() {
   createCanvas(440, 600);
-  setupStartScreen();
+  setupStartScreen(); // shows start screen first
 }
 
 // initialise game //
 function setupGame() {
-  character = new Character();
-  platforms = [];
-  score = 0;
-  gap = 100;
+  character = new Character(); // creates the character
+  platforms = []; // resets platforms
+  score = 0; // resets score
+  gap = 100; // distance between the platforms
 
   // pre gen platforms for start //
   for (let i = 1; i < 6; i++) {
@@ -119,15 +119,15 @@ function setupGame() {
 function draw() {
   background(135, 206, 235); // sky blue
 
-  // draw score //
+  // draw score // pushpop isolates text style so other shapes arent affected
   push();
   fill(0);
   textSize(24);
   textAlign(CENTER);
-  text(score, width / 2, 50); // fixed position
+  text(score, width / 2, 50); // fixed position, top-center
   pop();
 
-  // Game states //
+  // Game states // return stops the rest of draw() from running
   if (gameState === "start") {
     drawStartScreen();
     drawPlatformsPreview();
@@ -139,13 +139,12 @@ function draw() {
     return; // important
   }
   push();
-
   // canvas moves with character // smooth canvasa post move //
   if (character.started && character.y < height / 2) {
     translate(0, height / 2 - character.y);
   }
 
-  // update and draw character and platforms //
+  // updates and draws, character and platforms //
   character.update(platforms);
   character.draw();
 
@@ -164,8 +163,8 @@ function draw() {
 
     // removing old plats and score go up //
     if (platforms[0].y > character.y + 400) {
-      platforms.shift();
-      score++;
+      platforms.shift(); // remove off screen platforms
+      score++; // increases the score
     }
   }
   pop(); // kamera pop
@@ -176,7 +175,7 @@ function drawPlatformsPreview() {
   for (let p of platforms) p.draw();
 }
 
-// start screen //
+// start screen // creates clickable start button and hides it when game starts
 function setupStartScreen() {
   startButton = createButton("START 😎");
   startButton.position(170, 270);
@@ -192,6 +191,7 @@ function setupStartScreen() {
 }
 
 function drawStartScreen() {
+  // draws title text for start screen
   textAlign(CENTER, CENTER);
   textSize(32);
   fill(255);
@@ -199,7 +199,7 @@ function drawStartScreen() {
   text("game title", width / 2, height / 3);
 }
 
-// game over screen //
+// game over screen // with final score, restart button resets game
 function drawGameOverScreen() {
   background(50);
   textAlign(CENTER, CENTER);
@@ -227,7 +227,7 @@ function drawGameOverScreen() {
   }
 }
 
-// ---------------- INPUT FOR JUMP ---------------- //
+// when pressing spacebar, character jumps, only during play state //
 function keyPressed() {
   if (gameState === "playing" && key === " ") {
     character.jump();
