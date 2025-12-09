@@ -8,6 +8,10 @@ class Character {
     this.vy = 0;
     this.gravity = 0.8;
   }
+  update() {
+    this.y += this.vy;
+    this.vy += this.gravity;
+  }
 
   draw() {
     push();
@@ -22,7 +26,8 @@ class Character {
 // -------------------------------------------------------
 let canvasWidth = 440;          // Width of the game window
 let canvasHeight = 600;         // Height of the game window
-let floorY = 530; // you'll die. // Y position of the deadly floor line
+//let floorY = 530; // you'll die. // Y position of the deadly floor line
+let floorY = canvasHeight - 70;
 let character;                  // Will store the Character object
 const moveSpeed = 5;            // How fast the character moves left/right
 const jumpSpeed = -18;          // Upward jump velocity (negative goes up)
@@ -141,11 +146,21 @@ function draw() {
     return;
   }
 
-  //play state ??wtf??
-//   translate(0, height / 2 - character.y); // makes it so THAT canvas moves with character
-//   // update and draw character and platforms //
-//   character.update(platforms);
-//   character.draw();
+  //  push();
+  // translate(0, height / 2 - character.y);
+
+  // // update + draw character
+  // character.update();
+  // character.draw();
+
+  // // draw + move platforms
+  // drawAndMovePlatforms();
+
+  // pop(); // ← VERY IMPORTANT
+
+  // // Now draw UI ON TOP OF WORLD
+  // drawScore();
+  // drawFloorLine();
 
  //score count
   score += scoreRate;  // increases every frame
@@ -210,6 +225,95 @@ function draw() {
   stroke(0);
   line(0, floorY, canvasWidth, floorY);
 }
+// function draw() {
+//   if (!gameStarted) return;
+
+//   background(100, 160, 200);
+
+//   if (gameOverState) {
+//     gameOver();
+//     return;
+//   }
+
+//   // -------------------------
+//   // CAMERA FOLLOW
+//   // -------------------------
+//   push();
+//   translate(0, height / 2 - character.y);
+
+//   // Character update & draw
+//   character.update();
+//   character.draw();
+
+//   // -------------------------
+//   // PLATFORMS MOVE & RESPAWN
+//   // -------------------------
+//   if (platformsFalling) {
+//     for (let plat of platforms) {
+//       plat.y += platformFallSpeed;
+
+//       // respawn when far below camera
+//       if (plat.y > character.y + height) {
+//         plat.w = random(platformWidthRange[0], platformWidthRange[1]);
+//         plat.x = random(0, canvasWidth - plat.w);
+
+//         // new platform appears ABOVE screen
+//         plat.y = character.y - random(150, 250);
+//       }
+//     }
+//   }
+
+//   // draw platforms
+//   for (let plat of platforms) {
+//     fill(105, 70, 30);
+//     rect(plat.x, plat.y, plat.w, plat.h, 6);
+//   }
+
+//   pop();  // END CAMERA
+
+
+//   // -------------------------
+//   // SCORE (fixed on screen)
+//   // -------------------------
+//   score += scoreRate;
+//   fill(255);
+//   textSize(24);
+//   text("Score: " + floor(score), 10, 10);
+
+
+//   // -------------------------
+//   // DEADLY FLOOR (fixed)
+//   // -------------------------
+//   stroke(0);
+//   line(0, floorY, canvasWidth, floorY);
+
+
+//   // -------------------------
+//   // MOVEMENT
+//   // -------------------------
+//   if (keyIsDown(65) || keyIsDown(LEFT_ARROW)) character.x -= moveSpeed;
+//   if (keyIsDown(68) || keyIsDown(RIGHT_ARROW)) character.x += moveSpeed;
+//   character.x = constrain(character.x, 0, canvasWidth - character.w);
+
+
+//   // GRAVITY
+//   character.y += character.vy;
+//   character.vy += character.gravity;
+
+
+//   // DEATH CHECK (character touches floor)
+//   if (character.y + character.h >= floorY) gameOver();
+
+
+//   // PLATFORM LANDING
+//   let standingPlat = isOnAnyPlatform();
+//   if (character.vy > 0 && standingPlat) {
+//     character.y = standingPlat.y - character.h;
+//     character.vy = 0;
+//     platformsFalling = true;
+//   }
+// }
+
 
 function keyPressed() {
   if (!gameStarted) return;
@@ -237,3 +341,13 @@ function keyPressed() {
     else if (keyIsDown(68)) character.x += 10;
   }
 }
+
+// let doodler;
+// function setup() {
+//   createCanvas(400, 600);
+//   doodler = new Doodler();
+// }
+// function draw() {
+//   background(100, 100, 255);
+//   doodler.draw();
+// }
