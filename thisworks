@@ -8,7 +8,7 @@ let gameState = "start"; // "start", "playing", "gameover"
 let startButton;
 let gameOverButton;
 
-// character class // start import
+// character class //
 class Character {
   constructor() {
     this.width = 45; // character width in pixels
@@ -70,7 +70,6 @@ class Character {
         ) {
           let minX = platform.x - this.width;
           let maxX = platform.x + platform.width;
-
           if (this.x >= minX && this.x <= maxX) {
             this.velocity = -this.jumpStrength;
 
@@ -85,8 +84,7 @@ class Character {
     }
   }
 }
-// END of character class
-// platform class // start of class plats
+// platform class
 class Platform {
   constructor(x, y, type = "static") {
     this.x = x; // horizontal position
@@ -94,7 +92,6 @@ class Platform {
     this.width = 85;
     this.height = 20;
     this.type = type; // static platforms
-
     this.speed = 2;
     this.direction = 1;
     this.broken = false;
@@ -182,7 +179,7 @@ function draw() {
     plat.update();
     plat.draw();
   }
-  // new platforms as character goes up // THIS IS NOT THE SAME
+  // new platforms as character goes up //
   if (character.started) {
     if (character.y < platforms[platforms.length - 1].y + 200) {
       let typeChance = random();
@@ -199,7 +196,7 @@ function draw() {
       );
     }
 
-    // removing old plats and score go up THIS IS THE SAME //
+    // removing old plats and score go up //
     if (platforms[0].y > character.y + 400) {
       platforms.shift(); // remove off screen platforms
       score++; // increases the score
@@ -208,7 +205,6 @@ function draw() {
 
   pop(); // kamera pop
 }
-// end of platform class
 
 // platform preview on start screen //
 function drawPlatformsPreview() {
