@@ -175,6 +175,7 @@ function draw() {
   line(0, floor, canvasWidth, floor);
 }
 function keyPressed() {
+  // Ignore before game start, prevents restart
   if (!gameStarted) return;
 
   if (gameOverState && keyCode === 32) {
@@ -182,6 +183,7 @@ function keyPressed() {
     startGame();
     return;
   }
+  //checking if floor deadly, y+h feet of character, tolerance few pixels of wiggle room
   let onFloor =
     character.y + character.h >= floor - tolerance &&
     character.y + character.h <= floor + tolerence;
@@ -190,7 +192,7 @@ function keyPressed() {
 
   if (onFloor || onPlatform) {
     character.vy = jumpSpeed;
-
+    // character on floor or platform jumpspeed, only jump trigger no mid air jump
     // Diagonal adjustment
     if (keyIsDown(65)) character.x -= 10;
     else if (keyIsDown(68)) character.x += 10;

@@ -5,37 +5,50 @@ let gap;
 let score = 0;
 
 let gameState = "start"; // "start", "playing", "gameover"
-
 let startButton;
 let gameOverButton;
 
-// character class
+// character class //
 class Character {
   constructor() {
-    this.x = width / 2;
-    this.y = height / 2;
-    this.width = 45;
-    this.height = 45;
+    this.width = 45; // character side
+    this.height = 45; // character side
+
+    this.x = width / 2 - this.width / 2;
+    this.y = height - this.height - 10; // 10 px margin from bottom
 
     this.velocity = 4; // fall speed
     this.gravity = 0.1; // how much boune on platform, lower number = weaker
     this.jumpStrength = 12;
+
+    this.started = false; // jump not start
+    this.firstJumpEase = 0; // easing factor for smooth first jump
   }
 
   draw() {
     fill(139, 69, 19);
-    rect(this.x, this.y, this.width, this.height, 10);
+    rect(this.x, this.y, this.width, this.height, 10); // last number radius on corner
   }
 
   jump() {
-    this.velocity -= this.jumpStrength;
+    if (!this.started) {
+      this.started = true;
+      this.firstJumpEase = 0; // starting ease jump
+    } else {
+      this.velocity = -this.jumpStrength;
+    }
   }
-  // gravity
-  update(platforms) {
-    this.velocity += this.gravity;
-    this.y += this.velocity;
 
-    if (this.velocity < -9) this.velocity = -9; // speed limit
+  update(platforms) {
+    // smooth first jump
+    if (this.started && this.firstJumpEase < 1) {
+      this.firstJumpEase += 0.03;
+      this.velocity = -this.jumpStrength * this.firstJumpEase;
+    } else if (this.started) {
+      this.velocity += this.gravity;
+    }
+
+    this.y += this.velocity;
 
     // left right move
     if (keyIsDown(LEFT_ARROW)) this.x -= 4;
@@ -45,24 +58,25 @@ class Character {
     if (this.x + this.width < 0) this.x = width;
     if (this.x > width) this.x = -this.width;
 
-    // platform landing
-    for (let platform of platforms) {
-      if (
-        this.y + this.height >= platform.y &&
-        this.y + this.height <= platform.y + platform.height &&
-        this.velocity > 0
-      ) {
-        let minX = platform.x - this.width;
-        let maxX = platform.x + platform.width;
-
-        if (this.x >= minX && this.x <= maxX) {
-          this.jump();
+    // platform collis. after jump starts
+    if (this.started) {
+      for (let platform of platforms) {
+        if (
+          this.y + this.height >= platform.y &&
+          this.y + this.height <= platform.y + platform.height &&
+          this.velocity > 0
+        ) {
+          let minX = platform.x - this.width;
+          let maxX = platform.x + platform.width;
+          if (this.x >= minX && this.x <= maxX) {
+            this.velocity = -this.jumpStrength;
+          }
         }
       }
     }
 
     // game over if fall too low
-    if (this.y > platforms[0].y + 600) {
+    if (this.y > height + 200) {
       gameState = "gameover";
     }
   }
@@ -90,15 +104,14 @@ function setup() {
 
 // initialise game //
 function setupGame() {
-  character = new Character(200, 300, 60, 60);
+  character = new Character();
   platforms = [];
   score = 0;
+  gap = 100;
 
-  let platformCount = 6;
-  gap = height / platformCount;
-
-  for (let i = 1; i < platformCount; i++) {
-    platforms.push(new Platform(random(width), height - i * gap));
+  // pre gen platforms for start //
+  for (let i = 1; i < 6; i++) {
+    platforms.push(new Platform(random(width - 60), height - i * gap));
   }
 }
 
@@ -106,93 +119,105 @@ function setupGame() {
 function draw() {
   background(135, 206, 235); // sky blue
 
+  // draw score //
+  push();
+  fill(0);
+  textSize(24);
+  textAlign(CENTER);
+  text(score, width / 2, 50); // fixed position
+  pop();
+
+  // Game states //
   if (gameState === "start") {
     drawStartScreen();
-    return;
+    drawPlatformsPreview();
+    return; // important
   }
-
+  // Game over //
   if (gameState === "gameover") {
     drawGameOverScreen();
-    return;
+    return; // important
+  }
+  push();
+
+  // canvas moves with character // smooth canvasa post move //
+  if (character.started && character.y < height / 2) {
+    translate(0, height / 2 - character.y);
   }
 
-  // play state //
-  translate(0, height / 2 - character.y); // makes it so THAT canvas moves with character
   // update and draw character and platforms //
   character.update(platforms);
   character.draw();
 
   for (let plat of platforms) plat.draw();
 
-  // new platforms as character goes up //
-  if (character.y < platforms[platforms.length - 1].y + 200) {
-    platforms.push(
-      new Platform(random(width), platforms[platforms.length - 1].y - gap)
-    );
-  }
+  if (character.started) {
+    // new platforms as character goes up //
+    if (character.y < platforms[platforms.length - 1].y + 200) {
+      platforms.push(
+        new Platform(
+          random(width - 60),
+          platforms[platforms.length - 1].y - gap
+        )
+      );
+    }
 
-  // removing old plats and score go up //
-  if (platforms[0].y > character.y + 400) {
-    platforms.shift();
-    score++;
+    // removing old plats and score go up //
+    if (platforms[0].y > character.y + 400) {
+      platforms.shift();
+      score++;
+    }
   }
+  pop(); // kamera pop
+}
 
-  // draw score //
-  push();
-  fill(0);
-  textSize(24);
-  textAlign(CENTER);
-  text(score, width / 2, character.y - 150);
-  pop();
+// platform preview on start screen //
+function drawPlatformsPreview() {
+  for (let p of platforms) p.draw();
 }
 
 // start screen //
 function setupStartScreen() {
   startButton = createButton("START 😎");
-  startButton.style("z-index", "1000"); // on yop of canvas
   startButton.position(170, 270);
   startButton.size(150, 70);
   startButton.style("font", "bold 26px verdana");
   startButton.style("border-radius", "15px");
+
   startButton.mousePressed(() => {
-    gameState = "playing";
     startButton.hide();
     setupGame();
+    gameState = "playing";
   });
 }
 
 function drawStartScreen() {
-  push();
   textAlign(CENTER, CENTER);
   textSize(32);
   fill(255);
   textFont("comic sans ms");
   text("game title", width / 2, height / 3);
-  pop();
 }
 
 // game over screen //
 function drawGameOverScreen() {
   background(50);
-  push();
   textAlign(CENTER, CENTER);
   textFont("comic sans ms");
   textSize(25);
   fill(255);
   text("you just lost the game (✿◡‿◡)", width / 2, height / 3);
-
   textSize(24);
   text("Final Score: " + score, width / 2, height / 2);
-  pop();
 
   // restart button //
   if (!gameOverButton) {
     gameOverButton = createButton("RESTART");
-    gameOverButton.style("z-index", "1000"); // on top of canvas
     gameOverButton.position(180, 370);
     gameOverButton.size(140, 50);
     gameOverButton.style("font", "bold 22px verdana");
     gameOverButton.style("border-radius", "10px");
+
     gameOverButton.mousePressed(() => {
       setupGame();
       gameOverButton.remove();
