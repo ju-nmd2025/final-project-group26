@@ -1,6 +1,6 @@
 // variables
 
-//let character; 
+let character; 
 let platforms = [];
 let gap;
 let score = 0;
@@ -64,6 +64,7 @@ class Character {
     // Platform collisions
     if (this.started) {
       for (let platform of platforms) {
+        if(platform.broken) continue; //skip broken platform
         if (
           this.y + this.height >= platform.y &&
           this.y + this.height <= platform.y + platform.height &&
@@ -74,6 +75,8 @@ class Character {
 
           if (this.x >= minX && this.x <= maxX) {
             this.velocity = -this.jumpStrength;
+
+            if(platform.type === "breakable") platform.break();
           }
         }
       }
@@ -90,34 +93,49 @@ class Character {
 // MOVING PLATFORM CLASS
 // -------------------------------------------------------------
 class Platform {
-  constructor(x, y) {
+  constructor(x, y, type = "static") {
     this.x = x;
     this.y = y;
     this.width = 85;
     this.height = 20;
-
+    this.type = type;
+    this.broken = false;
+    this.speed = 2;
+    this.direction = 1;
     // NEW — RANDOM MOVEMENT VALUES
-    this.speed = random(1, 3);   // speed of movement
-    this.direction = random([1, -1]); // left or right
-    this.isMoving = random() < 0.35;  // 35% chance to be a moving platform
+    // this.speed = random(1, 3);   // speed of movement
+    // this.direction = random([1, -1]); // left or right
+    //this.isMoving = random() < 0.35;  // 35% chance to be a moving platform
   }
+
+  draw() {
+    if(this.type === "static") fill(100, 205, 100);
+    if(this.type === "moving") fill(190, 170, 0);
+    if(this.type === "breakable") fill(210, 105, 100);
+
+    if (!this.broken) rect(this.x, this.y, this.width, this.height, 10);
+    }
+  
 
   update() {
     // Only move if flagged as moving
-    if (this.isMoving) {
+    if (this.type === "moving") {
       this.x += this.speed * this.direction;
 
       // Bounce off walls
-      if (this.x < 0 || this.x + this.width > width) {
+      if (this.x <= 0 || this.x + this.width >= width) {
         this.direction *= -1; // reverse direction
       }
     }
   }
 
-  draw() {
-    fill(this.isMoving ? color(255, 180, 80) : color(100, 205, 100)); 
-    rect(this.x, this.y, this.width, this.height, 10);
+  break(){
+    if(this.type === "breakable") this.broken = true;
   }
+//   draw() {
+//     fill(this.isMoving ? color(255, 180, 80) : color(100, 205, 100)); 
+//     rect(this.x, this.y, this.width, this.height, 10);
+//   }
 }
 
 // -------------------------------------------------------------
@@ -137,9 +155,20 @@ function setupGame() {
   score = 0;
   gap = 100;
 
-  // Generate initial platforms
+//   // Generate initial platforms
+//   for (let i = 1; i < 6; i++) {
+//     platforms.push(new Platform(random(width - 60), height - i * gap));
+//   }
+// }
+
+  // pre gen platforms for start //
   for (let i = 1; i < 6; i++) {
-    platforms.push(new Platform(random(width - 60), height - i * gap));
+    let typeChance = random();
+    let type = "static";
+    if (typeChance < 0.2) type = "breakable";
+    else if (typeChance < 0.4) type = "moving";
+
+    platforms.push(new Platform(random(width - 60), height - i * gap, type));
   }
 }
 
@@ -186,16 +215,34 @@ function draw() {
     plat.draw();
   }
 
-  // Spawn new platforms
-  if (character.started) {
+//   // Spawn new platforms
+//   if (character.started) {
+//     if (character.y < platforms[platforms.length - 1].y + 200) {
+//       platforms.push(
+//         new Platform(
+//           random(width - 60),
+//           platforms[platforms.length - 1].y - gap
+//         )
+//       );
+//     }
+if (character.started) {
     if (character.y < platforms[platforms.length - 1].y + 200) {
+      let typeChance = random();
+      let type = "static";
+      if (typeChance < 0.2) type = "breakable";
+      else if (typeChance < 0.4) type = "moving";
+
       platforms.push(
         new Platform(
           random(width - 60),
-          platforms[platforms.length - 1].y - gap
+          platforms[platforms.length - 1].y - gap,
+          type
         )
       );
     }
+
+
+
 
     // Remove old platforms + increase score
     if (platforms[0].y > character.y + 400) {
