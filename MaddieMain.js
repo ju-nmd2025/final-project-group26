@@ -61,6 +61,8 @@ class Character {
     // platform collis. after jump starts
     if (this.started) {
       for (let platform of platforms) {
+        if (platform.broken) continue; // skip broken platforms
+
         if (
           this.y + this.height >= platform.y &&
           this.y + this.height <= platform.y + platform.height &&
@@ -69,34 +71,53 @@ class Character {
           let minX = platform.x - this.width;
           let maxX = platform.x + platform.width;
           if (this.x >= minX && this.x <= maxX) {
-            this.velocity = -this.jumpStrength; // bounce
+            this.velocity = -this.jumpStrength;
+
+            if (platform.type === "breakable") platform.break();
           }
         }
       }
     }
-
     // game over if fall too low
     if (this.y > height + 200) {
       gameState = "gameover";
     }
   }
 }
-
 // platform class
 class Platform {
-  constructor(x, y) {
+  constructor(x, y, type = "static") {
     this.x = x; // horizontal position
     this.y = y; // veritcal position
     this.width = 85;
     this.height = 20;
+    this.type = type; // static platforms
+    this.speed = 2;
+    this.direction = 1;
+    this.broken = false;
   }
 
   draw() {
-    fill(100, 205, 100);
-    rect(this.x, this.y, this.width, this.height, 10);
+    if (this.type === "static") fill(100, 205, 100);
+    if (this.type === "moving") fill(100, 175, 100);
+    if (this.type === "breakable") fill(100, 155, 100);
+
+    if (!this.broken) rect(this.x, this.y, this.width, this.height, 10);
+  }
+
+  update() {
+    if (this.type === "moving") {
+      this.x += this.speed * this.direction;
+      if (this.x <= 0 || this.x + this.width >= width) this.direction *= -1;
+    }
+  }
+
+  break() {
+    if (this.type === "breakable") this.broken = true;
   }
 }
-// GAME SETUP //
+
+// SETUP canvas start //
 function setup() {
   createCanvas(440, 600);
   setupStartScreen(); // shows start screen first
@@ -111,7 +132,12 @@ function setupGame() {
 
   // pre gen platforms for start //
   for (let i = 1; i < 6; i++) {
-    platforms.push(new Platform(random(width - 60), height - i * gap));
+    let typeChance = random();
+    let type = "static";
+    if (typeChance < 0.2) type = "breakable";
+    else if (typeChance < 0.4) type = "moving";
+
+    platforms.push(new Platform(random(width - 60), height - i * gap, type));
   }
 }
 
@@ -139,6 +165,7 @@ function draw() {
     return; // important
   }
   push();
+
   // canvas moves with character // smooth canvasa post move //
   if (character.started && character.y < height / 2) {
     translate(0, height / 2 - character.y);
@@ -148,15 +175,23 @@ function draw() {
   character.update(platforms);
   character.draw();
 
-  for (let plat of platforms) plat.draw();
-
+  for (let plat of platforms) {
+    plat.update();
+    plat.draw();
+  }
+  // new platforms as character goes up //
   if (character.started) {
-    // new platforms as character goes up //
     if (character.y < platforms[platforms.length - 1].y + 200) {
+      let typeChance = random();
+      let type = "static";
+      if (typeChance < 0.2) type = "breakable";
+      else if (typeChance < 0.4) type = "moving";
+
       platforms.push(
         new Platform(
           random(width - 60),
-          platforms[platforms.length - 1].y - gap
+          platforms[platforms.length - 1].y - gap,
+          type
         )
       );
     }
@@ -167,6 +202,7 @@ function draw() {
       score++; // increases the score
     }
   }
+
   pop(); // kamera pop
 }
 
