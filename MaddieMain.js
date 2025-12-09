@@ -18,8 +18,8 @@ class Character {
     this.y = height - this.height - 10; // 10 px margin from bottom
 
     this.velocity = 0; // fall , 0 imply start at ground, inital vert speed
-    this.gravity = 0.1; // how much bounce on platform, lower number = weaker gravity, downward acceleration
-    this.jumpStrength = 8; // how strong it jumps, upward jump speed
+    this.gravity = 0.2; // how much bounce on platform, lower number = weaker gravity, downward acceleration
+    this.jumpStrength = 9; // how strong it jumps, upward jump speed
 
     this.started = false; // jump not start
     this.firstJumpEase = 0; // easing factor for smooth first jump, gradual increase
@@ -51,8 +51,8 @@ class Character {
     this.y += this.velocity; // moves character vertically
 
     // left right move
-    if (keyIsDown(LEFT_ARROW)) this.x -= 4;
-    if (keyIsDown(RIGHT_ARROW)) this.x += 4;
+    if (keyIsDown(LEFT_ARROW)) this.x -= 7;
+    if (keyIsDown(RIGHT_ARROW)) this.x += 7;
 
     // screen wrap
     if (this.x + this.width < 0) this.x = width; // wrap left
@@ -99,8 +99,8 @@ class Platform {
 
   draw() {
     if (this.type === "static") fill(100, 205, 100);
-    if (this.type === "moving") fill(100, 175, 100);
-    if (this.type === "breakable") fill(100, 155, 100);
+    if (this.type === "moving") fill(190, 170, 0);
+    if (this.type === "breakable") fill(210, 105, 100);
 
     if (!this.broken) rect(this.x, this.y, this.width, this.height, 10);
   }
