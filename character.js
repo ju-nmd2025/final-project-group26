@@ -43,8 +43,8 @@ export class Character {
     this.y += this.velocity;
 
     // left/right movement
-    if (keyIsDown(LEFT_ARROW)) this.x -= 7;
-    if (keyIsDown(RIGHT_ARROW)) this.x += 7;
+    if (keyIsDown(LEFT_ARROW) || keyIsDown(65)) this.x -= 7;
+    if (keyIsDown(RIGHT_ARROW) || keyIsDown(68)) this.x += 7;
 
     // screen wrap
     if (this.x + this.width < 0) this.x = width;
