@@ -1,124 +1,18 @@
 // variables
-let character; // hold character object
+import { Character } from "./MaddieCharacter.js";
+import { Platform } from "./MaddiePlats.js";
+
+let character; // holds character object
 let platforms = []; // platform array - stores platform objects
 let gap; // vertical space between platforms
 let score = 0; // keeping track of how many platforms the character has passed
-
 let gameState = "start"; // "start", "playing", "gameover"
 let startButton;
 let gameOverButton;
 
-// character class // start import
-class Character {
-  constructor() {
-    this.width = 45; // character width in pixels
-    this.height = 45; // character height in pixels
+const GRAVITY = 0.2; // as the gravity doesnt change, keep in main
 
-    this.x = width / 2 - this.width / 2; // center horizontally
-    this.y = height - this.height - 10; // 10 px margin from bottom
-
-    this.velocity = 0; // fall , 0 imply start at ground, inital vert speed
-    this.gravity = 0.2; // how much bounce on platform, lower number = weaker gravity, downward acceleration
-    this.jumpStrength = 9; // how strong it jumps, upward jump speed
-
-    this.started = false; // jump not start
-    this.firstJumpEase = 0; // easing factor for smooth first jump, gradual increase
-  }
-
-  draw() {
-    fill(139, 69, 19);
-    rect(this.x, this.y, this.width, this.height, 10); // last number radius on corner
-  }
-
-  jump() {
-    if (!this.started) {
-      this.started = true; // first jump starts game
-      this.firstJumpEase = 0; // reset easing factor
-    } else {
-      this.velocity = -this.jumpStrength; // jump upwards
-    }
-  }
-
-  update(platforms) {
-    // smooth first jump
-    if (this.started && this.firstJumpEase < 1) {
-      this.firstJumpEase += 0.03;
-      this.velocity = -this.jumpStrength * this.firstJumpEase;
-    } else if (this.started) {
-      this.velocity += this.gravity; // normal gravity
-    }
-
-    this.y += this.velocity; // moves character vertically
-
-    // left right move
-    if (keyIsDown(LEFT_ARROW)) this.x -= 7;
-    if (keyIsDown(RIGHT_ARROW)) this.x += 7;
-
-    // screen wrap
-    if (this.x + this.width < 0) this.x = width; // wrap left
-    if (this.x > width) this.x = -this.width; // wrap right
-
-    // platform collis. after jump starts
-    if (this.started) {
-      for (let platform of platforms) {
-        if (platform.broken) continue; // skip broken platforms
-
-        if (
-          this.y + this.height >= platform.y &&
-          this.y + this.height <= platform.y + platform.height &&
-          this.velocity > 0
-        ) {
-          let minX = platform.x - this.width;
-          let maxX = platform.x + platform.width;
-
-          if (this.x >= minX && this.x <= maxX) {
-            this.velocity = -this.jumpStrength;
-
-            if (platform.type === "breakable") platform.break();
-          }
-        }
-      }
-    }
-    // game over if fall too low
-    if (this.y > height + 200) {
-      gameState = "gameover";
-    }
-  }
-}
-// END of character class
 // platform class // start of class plats
-class Platform {
-  constructor(x, y, type = "static") {
-    this.x = x; // horizontal position
-    this.y = y; // veritcal position
-    this.width = 85;
-    this.height = 20;
-    this.type = type; // static platforms
-
-    this.speed = 2;
-    this.direction = 1;
-    this.broken = false;
-  }
-
-  draw() {
-    if (this.type === "static") fill(100, 205, 100);
-    if (this.type === "moving") fill(190, 170, 0);
-    if (this.type === "breakable") fill(210, 105, 100);
-
-    if (!this.broken) rect(this.x, this.y, this.width, this.height, 10);
-  }
-
-  update() {
-    if (this.type === "moving") {
-      this.x += this.speed * this.direction;
-      if (this.x <= 0 || this.x + this.width >= width) this.direction *= -1;
-    }
-  }
-
-  break() {
-    if (this.type === "breakable") this.broken = true;
-  }
-}
 
 // SETUP canvas start //
 function setup() {
@@ -128,7 +22,10 @@ function setup() {
 
 // initialise game //
 function setupGame() {
-  character = new Character(); // creates the character
+  character = new Character(GRAVITY, () => {
+    gameState = "gameover";
+  });
+  // creates the character
   platforms = []; // resets platforms
   score = 0; // resets score
   gap = 100; // distance between the platforms
@@ -208,13 +105,10 @@ function draw() {
 
   pop(); // kamera pop
 }
-// end of platform class
-
 // platform preview on start screen //
 function drawPlatformsPreview() {
   for (let p of platforms) p.draw();
 }
-
 // start screen // creates clickable start button and hides it when game starts
 function setupStartScreen() {
   startButton = createButton("START 😎");
