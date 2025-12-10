@@ -130,7 +130,7 @@ function drawStartScreen() {
   textSize(32);
   fill(255);
   textFont("comic sans ms");
-  text("game title", width / 2, height / 3);
+  text("Welcome to SquareJump", width / 2, height / 3);
 }
 
 // game over screen // with final score, restart button resets game
