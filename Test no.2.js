@@ -12,6 +12,10 @@ let gameOverButton;
 // CHARACTER CLASS
 // -------------------------------------------------------------
 import { Character } from "./character.js";
+
+function setupGame() {
+  character = new Character();
+}
   
 // -------------------------------------------------------------
 // MOVING PLATFORM CLASS
@@ -110,6 +114,8 @@ function draw() {
   text(score, width / 2, 50);
   pop();
 
+  character.update(platforms);
+character.draw();
   // Start screen
   if (gameState === "start") {
     drawStartScreen();
