@@ -1,33 +1,36 @@
 export class Character {
   constructor(gravity, onGameOver) {
     this.onGameOver = onGameOver; // without this the end screen doesnt show, auto return
-    this.width = 45;
+    this.width = 45;              //setting characters size
     this.height = 45;
 
-    this.x = width / 2 - this.width / 2;
+    this.x = width / 2 - this.width / 2; //placing the character near the bottom-center of the screen
     this.y = height - this.height - 10;
 
-    this.velocity = 0;
-    this.gravity = gravity; // lowercase
-    this.jumpStrength = 9;
+    this.velocity = 0; //char. vertical speed (when put too high char. falls down off of screen)
+    this.gravity = gravity; // lowercase //falling
+    this.jumpStrength = 9; //pushes char. upward
 
     this.started = false;
-    this.firstJumpEase = 0;
+    this.firstJumpEase = 1; //so the character doesnt go up too fast, before the first jump...
 
-    this.onGameOver = this.onGameOver; // callback to the main file
+    //this.onGameOver = this.onGameOver; // callback to the main file(redundant part of code...)
   }
 
-  draw() {
-    fill(139, 69, 19);
+  draw() { 
+    fill(153, 51, 0);
     rect(this.x, this.y, this.width, this.height, 10);
   }
 
-  jump() {
+  jump() {                      //if the game hasn't started, making first jump activate ease, after, applying upward velocity..
     if (!this.started) {
       this.started = true;
       this.firstJumpEase = 0;
     } else {
-      this.velocity = -this.jumpStrength;
+        this.jumpStrength;
+        this.velocity;
+        this.gravity;
+      //this.velocity = this.jumpStrength; //makes the spacebar reusable during the game. when - goes up, when blanc goes down by pressing....
     }
   }
 
@@ -40,13 +43,13 @@ export class Character {
       this.velocity += this.gravity;
     }
 
-    this.y += this.velocity;
+    this.y += this.velocity; //moving char. vertically
 
     // left/right movement
     if (keyIsDown(LEFT_ARROW) || keyIsDown(65)) this.x -= 7;
     if (keyIsDown(RIGHT_ARROW) || keyIsDown(68)) this.x += 7;
 
-    // screen wrap
+    // screen wrap appearing from sides
     if (this.x + this.width < 0) this.x = width;
     if (this.x > width) this.x = -this.width;
 

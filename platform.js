@@ -22,7 +22,7 @@ export class Platform {
   update() {
     if (this.type === "moving") {
       this.x += this.speed * this.direction;
-      if (this.x <= 0 || this.x + this.width >= width) this.direction *= -1;
+      if (this.x <= 0 || this.x + this.width >= width) this.direction *= -1; //bouncing off the wall
     }
   }
 

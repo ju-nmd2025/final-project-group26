@@ -10,7 +10,7 @@ let gameState = "start"; // "start", "playing", "gameover"
 let startButton;
 let gameOverButton;
 
-const GRAVITY = 0.2; // as the gravity doesnt change, keep in main
+let GRAVITY = 0.3; // as the gravity doesnt change, keep in main
 
 // platform class // start of class plats
 
@@ -56,7 +56,7 @@ function draw() {
   // Game states // return stops the rest of draw() from running
   if (gameState === "start") {
     drawStartScreen();
-    drawPlatformsPreview();
+    //drawPlatformsPreview();
     return; // important
   }
   // Game over //
@@ -106,9 +106,9 @@ function draw() {
   pop(); // kamera pop
 }
 // platform preview on start screen //
-function drawPlatformsPreview() {
-  for (let p of platforms) p.draw();
-}
+// function drawPlatformsPreview() {
+//   for (let p of platforms) p.draw();
+//}
 // start screen // creates clickable start button and hides it when game starts
 function setupStartScreen() {
   startButton = createButton("START 😎");
