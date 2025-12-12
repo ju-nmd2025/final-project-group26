@@ -1,6 +1,7 @@
 export class Character {
   constructor(gravity, onGameOver) {
-    this.onGameOver = onGameOver; // without this the end screen doesnt show
+    // character properties, position size velocity //
+    this.onGameOver = onGameOver; // without this the end screen doesnt show, auto return, thats the callback
     this.width = 45;
     this.height = 45;
 
@@ -8,7 +9,7 @@ export class Character {
     this.y = height - this.height - 10;
 
     this.velocity = 0;
-    this.gravity = gravity; // lowercase
+    this.gravity = gravity; // lowercase // physics, passed from main
     this.jumpStrength = 9;
 
     this.started = false;
@@ -23,6 +24,7 @@ export class Character {
   }
 
   jump() {
+    // physics of character //
     if (!this.started) {
       this.started = true;
       this.firstJumpEase = 0;
@@ -41,6 +43,7 @@ export class Character {
     }
 
     this.y += this.velocity;
+    // physic integration velo first then position, modular structure
 
     // left/right movement
     if (keyIsDown(LEFT_ARROW)) this.x -= 7;
@@ -50,31 +53,34 @@ export class Character {
     if (this.x + this.width < 0) this.x = width;
     if (this.x > width) this.x = -this.width;
 
-    // platform collision
+    // platform collision handle
     if (this.started) {
       for (let platform of platforms) {
-        if (platform.broken) continue;
+        if (platform.broken) continue; // broken platform not visible
 
         if (
+          // collosion detect // by limiting checks reduce unnecessary checks
           this.y + this.height >= platform.y &&
           this.y + this.height <= platform.y + platform.height &&
-          this.velocity > 0
+          this.velocity > 0 // prevents hitting platform when go up, without it game detects collusion even when character go up
+          // up = no collis. down = collis. matters
         ) {
           let minX = platform.x - this.width;
           let maxX = platform.x + platform.width;
 
           if (this.x >= minX && this.x <= maxX) {
-            this.velocity = -this.jumpStrength;
+            this.velocity = -this.jumpStrength; // boucne up
 
-            if (platform.type === "breakable") platform.break();
+            if (platform.type === "breakable") platform.break(); // polymorph w plats, breakable calls this
           }
         }
       }
     }
 
-    // game over if fall too low
+    // game over detection // if fall too low // she dont need to know game state, reusable
     if (this.y > height + 200 && this.onGameOver) {
       this.onGameOver();
     }
   }
 }
+// character handle movement och interal logik
