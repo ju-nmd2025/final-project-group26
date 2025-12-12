@@ -1,7 +1,6 @@
 // variables
 import { Character } from "./character.js";
 import { Platform } from "./platform.js";
-
 //let character; // holds character object
 let platforms = []; // platform array - stores platform objects
 let gap; // vertical space between platforms
