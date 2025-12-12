@@ -12,7 +12,7 @@ export class Character {
     this.jumpStrength = 9; //pushes char. upward
 
     this.started = false;
-    this.firstJumpEase = 1; //so the character doesnt go up too fast, before the first jump...
+    this.firstJumpEase = 0; //so the character doesnt go up too fast, before the first jump...
 
     //this.onGameOver = this.onGameOver; // callback to the main file(redundant part of code...)
   }
@@ -26,12 +26,10 @@ export class Character {
     if (!this.started) {
       this.started = true;
       this.firstJumpEase = 0;
-    } else {
-        this.jumpStrength;
-        this.velocity;
-        this.gravity;
-      //this.velocity = this.jumpStrength; //makes the spacebar reusable during the game. when - goes up, when blanc goes down by pressing....
-    }
+    } 
+    // else {
+    //    this.velocity = -this.jumpStrength; //makes the spacebar reusable during the game. when - goes up, when blanc goes down by pressing....
+    // }
   }
 
   update(platforms) {
