@@ -1,7 +1,7 @@
 // variables
 import { Character } from "./character.js";
 import { Platform } from "./platform.js";
-//let character; // holds character object
+let character; // holds character object
 let platforms = []; // platform array - stores platform objects
 let gap; // vertical space between platforms
 let score = 0; // keeping track of how many platforms the character has passed
@@ -171,10 +171,6 @@ function keyPressed() {
 window.setup = setup;
 
 window.draw = draw;
-
-window.addEventListener("click", function (event) {
-    mousePressed();
-});
 
 window.addEventListener("keydown", function (event) {
     keyPressed();
